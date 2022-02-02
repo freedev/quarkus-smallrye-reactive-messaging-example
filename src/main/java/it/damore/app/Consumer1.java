@@ -1,24 +1,19 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 import it.damore.models.ClassA;
-import org.eclipse.microprofile.reactive.messaging.*;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.concurrent.Executors;
 
 @ApplicationScoped
 public class Consumer1 {
 
     protected final Logger log;
 
-    BroadcastProcessor<String> processor;
-
     protected Consumer1() {
-        this.processor = BroadcastProcessor.create();
         this.log = Logger.getLogger(getClass());
     }
 
