@@ -15,14 +15,9 @@ public class Consumer2 {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("from-processor-to-consumer2")
+    @Incoming("pippo")
     public void consume(ClassB msg) {
         log.infof("consumer 3 received %s", msg);
-//        return Uni.createFrom().item(msg)
-//                .onItem()
-//                .invoke(m -> log.info("consumer3 message arrived"))
-//                .replaceWithVoid()
-//                .subscribeAsCompletionStage();
     }
 
 }

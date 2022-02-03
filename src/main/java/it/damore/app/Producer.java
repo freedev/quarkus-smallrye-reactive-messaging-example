@@ -26,16 +26,16 @@ public class Producer {
 
     public void periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();
+        Runnable runnable = () -> {
+                                        ClassA message = ClassA.builder()
+                                                .value("Hello " + counter.getAndIncrement())
+                                                .build();
+                                        log.info("Emitting: " + message);
+                                        emitter.send(message);
+                                  };
+
         Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(() -> {
-                            ClassA message = ClassA
-                                    .builder()
-                                    .value("Hello " + counter.getAndIncrement())
-                                    .build();
-                            log.info("Emitting: " + message);
-                            emitter.send(message);
-                        },
-                        1, 100, TimeUnit.MILLISECONDS);
+                 .scheduleAtFixedRate(runnable, 1, 100, TimeUnit.MILLISECONDS);
     }
 
 }
