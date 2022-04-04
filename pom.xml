@@ -17,7 +17,7 @@
     <quarkus.platform.version>2.6.3.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <azure.sdk.version>1.0.6</azure.sdk.version>
-    <lombok-version>1.18.20</lombok-version>
+    <lombok-version>1.18.22</lombok-version>
   </properties>
   <dependencyManagement>
     <dependencies>
