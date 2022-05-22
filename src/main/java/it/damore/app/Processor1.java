@@ -24,7 +24,7 @@ public class Processor1 {
     }
 
     @Incoming("from-consumer1-to-processor")
-    @Outgoing("pippo")
+    @Outgoing("from-processor-to-consumer2")
     public Multi<ClassB> consumeMulti2Multi(Multi<ClassA> stream) {
         return stream
                 .emitOn(pool)
