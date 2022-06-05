@@ -7,6 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CustomThreadPoolProducer {
     public static ExecutorService getPoolWithName(String poolName) {
         AtomicInteger counter = new AtomicInteger();
-        return Executors.newFixedThreadPool(2, r -> new Thread(r, poolName + "-" + counter.getAndIncrement()));
+        return Executors.newFixedThreadPool(4, r -> new Thread(r, poolName + "-" + counter.getAndIncrement()));
     }
 }

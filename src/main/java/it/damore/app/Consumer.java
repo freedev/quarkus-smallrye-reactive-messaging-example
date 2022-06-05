@@ -7,17 +7,17 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class Consumer2 {
+public class Consumer {
 
     protected final Logger log;
 
-    protected Consumer2() {
+    protected Consumer() {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("from-processor-to-consumer2")
+    @Incoming("from-processor-to-consumer")
     public void consume(ClassB msg) {
-        log.infof("consumer 3 received %s", msg);
+        log.infof("Consumer received %s", msg);
     }
 
 }
