@@ -1,33 +1,24 @@
-package it.damore.app;
+package it.damore.app0;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
-import it.damore.utils.CustomThreadPoolProducer;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.concurrent.ExecutorService;
 
 @ApplicationScoped
-public class Processor1 {
+public class Processor {
 
     protected final Logger log;
 
-    private static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor1.class.getName());
-
-    protected Processor1() {
+    protected Processor() {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("from-producer-to-processor")
-    @Outgoing("from-processor-to-consumer")
-    @Blocking
-//    @OnOverflow(value = OnOverflow.Strategy.FAIL)
+    @Incoming("app0-from-producer-to-processor")
+    @Outgoing("app0-from-processor-to-consumer")
     public ClassB consumeMulti2Multi(ClassA classA) {
         log.infof("Processor - received %s", classA);
         ClassB manipulated = ClassB.builder()

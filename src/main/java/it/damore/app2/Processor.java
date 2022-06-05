@@ -1,4 +1,4 @@
-package it.damore.app;
+package it.damore.app2;
 
 import io.smallrye.mutiny.Multi;
 import it.damore.models.ClassA;
@@ -13,18 +13,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class Processor2 {
+public class Processor {
 
     protected final Logger log;
 
-    private static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor2.class.getName());
+    private final static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor.class.getName());
 
-    protected Processor2() {
+    protected Processor() {
         this.log = Logger.getLogger(getClass());
     }
 
-//    @Incoming("from-producer-to-processor")
-//    @Outgoing("from-processor-to-consumer")
+    @Incoming("app2-from-producer-to-processor")
+    @Outgoing("app2-from-processor-to-consumer")
     public Multi<ClassB> consumeMulti2Multi(Multi<ClassA> stream) {
         return stream
                 .emitOn(pool)

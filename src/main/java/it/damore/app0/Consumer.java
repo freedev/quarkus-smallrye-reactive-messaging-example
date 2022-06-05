@@ -1,4 +1,4 @@
-package it.damore.app;
+package it.damore.app0;
 
 import it.damore.models.ClassB;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -15,7 +15,7 @@ public class Consumer {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("from-processor-to-consumer")
+    @Incoming("app0-from-processor-to-consumer")
     public void consume(ClassB msg) {
         log.infof("Consumer received %s", msg);
     }

@@ -1,36 +1,34 @@
-package it.damore.app;
+package it.damore.app1;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
-import io.smallrye.reactive.messaging.annotations.Blocking;
+import it.damore.Application;
 import it.damore.models.ClassA;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.time.Duration;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Producer {
 
+    public Boolean enabled = false;
     protected final Logger log;
 
     protected Producer() {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Outgoing("from-producer-to-processor")
+    @Outgoing("app1-from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.FAIL)
     public Multi<ClassA> periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();
+
+        if (!enabled) {
+            return Multi.createFrom().empty();
+        }
 
         return Multi.createFrom()
                 .ticks()
