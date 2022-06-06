@@ -19,13 +19,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <surefire-plugin.version>3.0.0-M6</surefire-plugin.version>
   </properties>
-  <dependencies>
-    <dependency>
-      <groupId>it.damore.quarkus.reactive-messaging</groupId>
-      <artifactId>common</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>
