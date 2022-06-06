@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ApplicationScoped
 public class Producer {
 
+    private AtomicInteger counter = new AtomicInteger();
     protected final Logger log;
 
     protected Producer() {
@@ -21,7 +22,6 @@ public class Producer {
 
     @Outgoing("from-producer-to-processor")
     public Multi<ClassA> periodicallySendMessage() {
-        AtomicInteger counter = new AtomicInteger();
 
         return Multi.createFrom()
                 .ticks()
