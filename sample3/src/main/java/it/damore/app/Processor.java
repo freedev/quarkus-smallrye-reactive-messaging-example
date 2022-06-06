@@ -35,9 +35,7 @@ public class Processor {
                     log.info("processor receive group of " + list.size());
                     Stream<ClassB> manipulatedStream = list.stream()
                             .map(msg -> {
-                                    ClassB manipulated = ClassB.builder()
-                                                                .value(String.format("YYY %s", msg.getValue()))
-                                                                .build();
+                                    ClassB manipulated = new ClassB(String.format("YYY %s", msg.getValue()));
 //                                    log.infof("processor manipulated message %s", manipulated);
                                     return manipulated;
                                 });

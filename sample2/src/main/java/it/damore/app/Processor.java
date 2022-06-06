@@ -24,9 +24,7 @@ public class Processor {
 //    @Blocking
     public ClassB consumeMulti2Multi(ClassA classA) {
         log.infof("Processor - received %s", classA);
-        ClassB manipulated = ClassB.builder()
-                .value(String.format("YYY %s", classA.getValue()))
-                .build();
+        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
         longExecution();
         return manipulated;
     }

@@ -18,21 +18,19 @@ public class Processor {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("app0-from-producer-to-processor")
-    @Outgoing("app0-from-processor-to-consumer")
-//    @Blocking("app0-processor-custom-pool")
+    @Incoming("from-producer-to-processor")
+    @Outgoing("from-processor-to-consumer")
+//    @Blocking("processor-custom-pool")
     public ClassB consumeMulti2Multi(ClassA classA) {
         log.infof("Processor - received %s", classA);
-        ClassB manipulated = ClassB.builder()
-                .value(String.format("YYY %s", classA.getValue()))
-                .build();
+        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
         longExecution();
         return manipulated;
     }
 
     public void longExecution() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

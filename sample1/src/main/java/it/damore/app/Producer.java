@@ -1,7 +1,6 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
-import it.damore.Application;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -20,7 +19,7 @@ public class Producer {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Outgoing("app0-from-producer-to-processor")
+    @Outgoing("from-producer-to-processor")
     public Multi<ClassA> periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();
 
@@ -29,9 +28,7 @@ public class Producer {
                 .every(Duration.ofMillis(50))
                 .onItem()
                 .transform(t -> {
-                    ClassA classA = ClassA.builder()
-                            .value("Hello " + counter.getAndIncrement())
-                            .build();
+                    ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
                     log.info("Producer emitting " + classA);
                     return classA;
                 });

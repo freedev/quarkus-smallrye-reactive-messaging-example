@@ -28,9 +28,7 @@ public class Producer {
                 .ticks()
                 .every(Duration.ofMillis(200))
                 .onItem()
-                .transform(t ->  ClassA.builder()
-                        .value("Hello " + counter.getAndIncrement())
-                        .build())
+                .transform(t -> new ClassA("Hello " + counter.getAndIncrement()))
                 .onItem()
                 .invoke(msg -> log.info("Producer emitting " + msg))
                 .onFailure(mm -> {

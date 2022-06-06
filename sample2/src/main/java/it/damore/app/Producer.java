@@ -1,7 +1,6 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
-import it.damore.Application;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -34,9 +33,7 @@ public class Producer {
                 .ticks()
                 .every(Duration.ofMillis(100))
                 .onItem()
-                .transform(t ->  ClassA.builder()
-                        .value("Hello " + counter.getAndIncrement())
-                        .build())
+                .transform(t -> new ClassA("Hello " + counter.getAndIncrement()))
                 .onItem()
                 .invoke(msg -> log.info("Producer emitting " + msg))
                 .onFailure(mm -> {

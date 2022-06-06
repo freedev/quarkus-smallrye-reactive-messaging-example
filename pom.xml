@@ -22,7 +22,6 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.9.2.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M6</surefire-plugin.version>
-    <lombok-version>1.18.24</lombok-version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -36,12 +35,6 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-      <scope>provided</scope>
-      <version>${lombok-version}</version>
-    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging</artifactId>
