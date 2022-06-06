@@ -23,8 +23,8 @@ public class Processor {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("app2-from-producer-to-processor")
-    @Outgoing("app2-from-processor-to-consumer")
+    @Incoming("from-producer-to-processor")
+    @Outgoing("from-processor-to-consumer")
     public Multi<ClassB> consumeMulti2Multi(Multi<ClassA> stream) {
         return stream
                 .emitOn(pool)

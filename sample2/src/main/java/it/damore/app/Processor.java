@@ -18,9 +18,9 @@ public class Processor {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("app1-from-producer-to-processor")
-    @Outgoing("app1-from-processor-to-consumer")
-//    @Blocking("app1-processor-custom-pool")
+    @Incoming("from-producer-to-processor")
+    @Outgoing("from-processor-to-consumer")
+//    @Blocking("processor-custom-pool")
 //    @Blocking
     public ClassB consumeMulti2Multi(ClassA classA) {
         log.infof("Processor - received %s", classA);

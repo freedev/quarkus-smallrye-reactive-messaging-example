@@ -12,22 +12,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Producer {
-
-    public Boolean enabled = false;
     protected final Logger log;
 
     protected Producer() {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Outgoing("app1-from-producer-to-processor")
+    @Outgoing("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.FAIL)
     public Multi<ClassA> periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();
-
-        if (!enabled) {
-            return Multi.createFrom().empty();
-        }
 
         return Multi.createFrom()
                 .ticks()

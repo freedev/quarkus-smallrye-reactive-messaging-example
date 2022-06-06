@@ -19,7 +19,7 @@ public class Producer {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Outgoing("app2-from-producer-to-processor")
+    @Outgoing("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.FAIL)
     public Multi<ClassA> periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();

@@ -15,7 +15,7 @@ public class Consumer {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Incoming("app2-from-processor-to-consumer")
+    @Incoming("from-processor-to-consumer")
     public void consume(ClassB msg) {
         log.infof("Consumer received %s", msg);
     }
