@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Producer {
     protected final Logger log;
 
+    private AtomicInteger counter = new AtomicInteger();
+
     protected Producer() {
         this.log = Logger.getLogger(getClass());
     }
@@ -21,7 +23,6 @@ public class Producer {
     @Outgoing("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.FAIL)
     public Multi<ClassA> periodicallySendMessage() {
-        AtomicInteger counter = new AtomicInteger();
 
         return Multi.createFrom()
                 .ticks()
@@ -35,7 +36,7 @@ public class Producer {
                     return true;
                 })
                 .retry()
-                .withBackOff(Duration.ofSeconds(1))
+                .withBackOff(Duration.ofSeconds(1), Duration.ofSeconds(10))
                 .indefinitely();
     }
 }
