@@ -1,7 +1,9 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import it.damore.utils.CustomThreadPoolProducer;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -42,24 +45,39 @@ public class Processor {
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
     public Multi<List<ClassB>> consumeMulti2Multi(Multi<ClassA> stream) {
+
         return stream
+                .emitOn(pool)
                 .group()
                 .intoLists()
                 .of(100)
                 .onItem()
-                .transform(Unchecked.function(i -> this.convert(i)))
-                .onFailure()
+                .transform(Unchecked.function(i -> this.deferred(i)))
+                .onFailure(t -> {
+                    return true;
+                })
                 .retry()
-                .withBackOff(this.initialBackOff).withJitter(.4)
+//                .withBackOff(this.initialBackOff)
+//                .withJitter(.4)
                 .atMost(this.maxRetry);
     }
 
-    public List<ClassB> convert(List<ClassA> msgList) throws Exception {
+    public List<ClassB> deferred(final List<ClassA> msgList) throws Exception {
+        return Uni.createFrom()
+                .deferred(() -> msgList, i -> Uni.createFrom().item(this.convert(i)))
+                .onFailure()
+                .retry()
+                .indefinitely()
+                .subscribe()
+                .asCompletionStage().get();
+    }
+    public List<ClassB> convert(List<ClassA> msgList) {
+
         int i = random.nextInt();
         if (i % 2 != 0) {
             String errMsg = String.format("Random Ex %s - %s ", i, msgList.get(0));
             log.error(errMsg);
-            throw new Exception(errMsg);
+            throw new RuntimeException(errMsg);
         }
         List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
         longExecution();

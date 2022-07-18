@@ -39,6 +39,8 @@ public class Producer {
                         emitter.send(message);
 //                        log.info("Emitting: " + message);
                         break;
+                    } else {
+                        Thread.sleep(250);
                     }
                 } catch (Exception e) {
                     log.warnf("Handling... %s", e.getMessage());
