@@ -72,16 +72,17 @@ public class Processor {
                 .asCompletionStage().get();
     }
     public List<ClassB> convert(List<ClassA> msgList) {
-
         int i = random.nextInt();
         if (i % 2 != 0) {
             String errMsg = String.format("Random Ex %s - %s ", i, msgList.get(0));
             log.error(errMsg);
             throw new RuntimeException(errMsg);
         }
-        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
         longExecution();
-        return classBList;
+        return msgList
+                .stream()
+                .map(msg -> new ClassB(String.format("YYY %s", msg.getValue())))
+                .collect(Collectors.toList());
     }
 
     public void longExecution() {
