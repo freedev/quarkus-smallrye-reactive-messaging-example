@@ -1,24 +1,26 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import it.damore.utils.CustomThreadPoolProducer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class Processor {
@@ -35,43 +37,43 @@ public class Processor {
     private Duration maxBackOff;
     private Integer sleep;
     protected Processor(
-                            @ConfigProperty(name = "application.request.processor.max.concurrent.requests", defaultValue = "1")
-                            Optional<Integer> optMaxConcurrencyLevel,
-                            @ConfigProperty(name = "application.request.processor.max.retry", defaultValue = "30")
-                            Optional<Integer> optMaxRetry,
-                            @ConfigProperty(name = "application.request.processor.backoff.initial", defaultValue = "10")
-                            Optional<Integer> optInitialBackOff,
-                            @ConfigProperty(name = "application.request.processor.backoff.max", defaultValue = "50")
-                            Optional<Integer> optMaxBackOff,
-                            @ConfigProperty(name = "application.request.processor.max.group.size", defaultValue = "100")
-                            Optional<Integer> optMaxGroupSize,
-                            @ConfigProperty(name = "application.request.processor.max.delay", defaultValue = "10")
-                            Optional<Integer> optMaxDelay,
-                            @ConfigProperty(name = "application.request.processor.sleep", defaultValue = "5000")
-                            Optional<Integer> optSleep
-                    ) {
-        this.maxRetry = optMaxRetry.orElse(1);
+            @ConfigProperty(name = "application.request.processor.max.concurrent.requests", defaultValue = "1")
+            Optional<Integer> optMaxConcurrencyLevel,
+            @ConfigProperty(name = "application.request.processor.max.retry", defaultValue = "30")
+            Optional<Integer> optMaxRetry,
+            @ConfigProperty(name = "application.request.processor.backoff.initial", defaultValue = "10")
+            Optional<Integer> optInitialBackOff,
+            @ConfigProperty(name = "application.request.processor.backoff.max", defaultValue = "50")
+            Optional<Integer> optMaxBackOff,
+            @ConfigProperty(name = "application.request.processor.max.group.size", defaultValue = "100")
+            Optional<Integer> optMaxGroupSize,
+            @ConfigProperty(name = "application.request.processor.max.delay")
+            Optional<Integer> optMaxDelay,
+            @ConfigProperty(name = "application.request.processor.sleep")
+            Optional<Integer> optSleep
+    ) {
+        this.maxRetry = optMaxRetry.orElse(30);
         this.initialBackOff = optInitialBackOff
                 .map(Duration::ofSeconds)
-                .orElse(Duration.ofSeconds(1));
+                .orElse(Duration.ofSeconds(10));
         this.maxBackOff = optMaxBackOff
                 .map(Duration::ofSeconds)
-                .orElse(Duration.ofSeconds(5));
+                .orElse(Duration.ofSeconds(50));
         this.maxGroupSize = optMaxGroupSize.orElse(100);
         this.maxDelay = optMaxDelay.orElse(10);
-        this.sleep = optSleep.orElse(0);
+        this.sleep = optSleep.orElse(5000);
         this.log = Logger.getLogger(getClass());
     }
 
+    //    @Blocking(value = "processor-custom-pool", ordered = false)
+//    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
     public Multi<List<ClassB>> consumeMulti2Multi(Multi<ClassA> stream) {
         return stream
-                .emitOn(pool)
-//                .emitOn(pool)
                 .group()
                 .intoLists()
-                .of(100)
+                .of(this.maxGroupSize)
                 .onItem()
                 .transform(Unchecked.function(i -> this.convert(i)))
                 .onFailure()
@@ -89,19 +91,19 @@ public class Processor {
                             this.initialBackOff, this.maxBackOff, this.maxRetry);
                     return true;
                 })
-                .recoverWithCompletion();
+                .recoverWithItem(() -> List.of());
     }
 
     public List<ClassB> convert(List<ClassA> msgList) throws Exception {
         Random r = new Random();
         int i = r.nextInt();
+        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
         if (i % 7 != 0) {
-            String errMsg = "Random exception raised";
+            String errMsg = "Random exception raised for " + msgList.get(0);
             log.error(errMsg);
             throw new Exception(errMsg);
         }
         longExecution();
-        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
         return classBList;
     }
 
@@ -112,5 +114,4 @@ public class Processor {
             throw new RuntimeException(e);
         }
     }
-
 }

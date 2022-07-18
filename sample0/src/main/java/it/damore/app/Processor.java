@@ -4,11 +4,13 @@ import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Random;
 
 @ApplicationScoped
 public class Processor {
@@ -20,20 +22,24 @@ public class Processor {
     }
 
     @Incoming("from-producer-to-processor")
-//    @Outgoing("from-processor-to-consumer")
-//    @Blocking("processor-custom-pool")
-    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
+    @Outgoing("from-processor-to-consumer")
     @Blocking(value = "processor-custom-pool", ordered = false)
-    public void consumeMulti2Multi(ClassA classA) {
-        log.infof("Processor - received %s", classA);
-        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
+    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
+    public Message<ClassB> consumeMulti2Multi(Message<ClassA> classA) {
+        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getPayload().getValue()));
         longExecution();
-//        return manipulated;
+        int i = new Random().nextInt();
+        if (i % 7 == 0)
+           classA.nack(new InternalError());
+        else
+           classA.ack();
+        log.infof("Processor received %s", classA.getPayload());
+        return Message.of(manipulated);
     }
 
     public void longExecution() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

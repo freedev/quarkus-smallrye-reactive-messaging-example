@@ -4,6 +4,7 @@ import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
@@ -19,13 +20,14 @@ public class Processor {
     }
 
     @Incoming("from-producer-to-processor")
-    @Outgoing("from-processor-to-consumer")
-//    @Blocking("processor-custom-pool")
-    public ClassB consumeMulti2Multi(ClassA classA) {
+//    @Outgoing("from-processor-to-consumer")
+//    @Blocking(ordered = false)
+    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
+    public void consumeMulti2Multi(ClassA classA) {
         log.infof("Processor - received %s", classA);
         ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
         longExecution();
-        return manipulated;
+//        return manipulated;
     }
 
     public void longExecution() {

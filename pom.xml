@@ -7,6 +7,9 @@
   <version>1.0.0</version>
   <packaging>pom</packaging>
   <modules>
+    <module>sampleProducerWithMulti</module>
+    <module>sampleProducer</module>
+    <module>sample0</module>
     <module>sample1</module>
     <module>sample2</module>
     <module>sample3</module>

@@ -21,22 +21,21 @@ public class Producer {
     }
 
     @Outgoing("from-producer-to-processor")
-    @OnOverflow(value = OnOverflow.Strategy.FAIL)
     public Multi<ClassA> periodicallySendMessage() {
 
         return Multi.createFrom()
                 .ticks()
-                .every(Duration.ofMillis(100))
-                .onItem()
-                .transform(t -> new ClassA("Hello " + counter.getAndIncrement()))
-                .onItem()
-                .invoke(msg -> log.info("Producer emitting " + msg))
+                .startingAfter(Duration.ofSeconds(2))
+                .every(Duration.ofMillis(50))
+                .onItem().transform(t -> new ClassA("Hello " + t))
                 .onFailure(mm -> {
                     log.info("Producer NOT EMITTING");
                     return true;
                 })
                 .retry()
                 .withBackOff(Duration.ofSeconds(1), Duration.ofSeconds(10))
-                .indefinitely();
+                .indefinitely()
+                .onItem()
+                .invoke(msg -> log.info("Producer emitting " + msg));
     }
 }

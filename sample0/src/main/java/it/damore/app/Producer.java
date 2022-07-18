@@ -1,7 +1,10 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
@@ -22,16 +25,10 @@ public class Producer {
 
     @Outgoing("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    public Multi<ClassA> periodicallySendMessage() {
-
-        return Multi.createFrom()
-                .ticks()
-                .every(Duration.ofMillis(50))
-                .onItem()
-                .transform(t -> {
-                    ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
-                    log.info("Producer emitting " + classA);
-                    return classA;
-                });
+    @Blocking(ordered = false)
+    public Message<ClassA> periodicallySendMessage() {
+        ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
+        log.info("Producer emitting " + classA);
+        return Message.of(classA);
     }
 }
