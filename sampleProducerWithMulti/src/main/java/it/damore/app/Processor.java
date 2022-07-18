@@ -2,14 +2,11 @@ package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import it.damore.utils.CustomThreadPoolProducer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
@@ -25,43 +22,18 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class Processor {
 
+    private Random random = new Random();
     protected final Logger log;
 
     private final static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor.class.getName());
 
     private AtomicInteger counter = new AtomicInteger();
-    private Integer maxGroupSize;
-    private Integer maxDelay;
-    private Integer maxRetry;
-    private Duration initialBackOff;
-    private Duration maxBackOff;
-    private Integer sleep;
-    protected Processor(
-            @ConfigProperty(name = "application.request.processor.max.concurrent.requests", defaultValue = "1")
-            Optional<Integer> optMaxConcurrencyLevel,
-            @ConfigProperty(name = "application.request.processor.max.retry", defaultValue = "30")
-            Optional<Integer> optMaxRetry,
-            @ConfigProperty(name = "application.request.processor.backoff.initial", defaultValue = "10")
-            Optional<Integer> optInitialBackOff,
-            @ConfigProperty(name = "application.request.processor.backoff.max", defaultValue = "50")
-            Optional<Integer> optMaxBackOff,
-            @ConfigProperty(name = "application.request.processor.max.group.size", defaultValue = "100")
-            Optional<Integer> optMaxGroupSize,
-            @ConfigProperty(name = "application.request.processor.max.delay")
-            Optional<Integer> optMaxDelay,
-            @ConfigProperty(name = "application.request.processor.sleep")
-            Optional<Integer> optSleep
-    ) {
-        this.maxRetry = optMaxRetry.orElse(30);
-        this.initialBackOff = optInitialBackOff
-                .map(Duration::ofSeconds)
-                .orElse(Duration.ofSeconds(10));
-        this.maxBackOff = optMaxBackOff
-                .map(Duration::ofSeconds)
-                .orElse(Duration.ofSeconds(50));
-        this.maxGroupSize = optMaxGroupSize.orElse(100);
-        this.maxDelay = optMaxDelay.orElse(10);
-        this.sleep = optSleep.orElse(5000);
+//    private Integer maxGroupSize = 100;
+//    private Integer maxDelay = 10;
+    private Integer maxRetry = 30;
+    private Duration initialBackOff = Duration.ofSeconds(2);
+    private Integer sleep = 5000;
+    protected Processor() {
         this.log = Logger.getLogger(getClass());
     }
 
@@ -73,36 +45,23 @@ public class Processor {
         return stream
                 .group()
                 .intoLists()
-                .of(this.maxGroupSize)
+                .of(100)
                 .onItem()
                 .transform(Unchecked.function(i -> this.convert(i)))
                 .onFailure()
-                .invoke(exception -> log.warn("Failed to read record."))
-                .onFailure(throwable -> {
-                    log.errorf(throwable, "initial Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
-                            this.initialBackOff, this.maxBackOff, this.maxRetry);
-                    return true;
-                })
                 .retry()
-                .withBackOff(this.initialBackOff, this.maxBackOff)
-                .atMost(this.maxRetry)
-                .onFailure(throwable -> {
-                    log.errorf(throwable, "latest Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
-                            this.initialBackOff, this.maxBackOff, this.maxRetry);
-                    return true;
-                })
-                .recoverWithItem(() -> List.of());
+                .withBackOff(this.initialBackOff).withJitter(.4)
+                .atMost(this.maxRetry);
     }
 
     public List<ClassB> convert(List<ClassA> msgList) throws Exception {
-        Random r = new Random();
-        int i = r.nextInt();
-        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
-        if (i % 7 != 0) {
-            String errMsg = "Random exception raised for " + msgList.get(0);
+        int i = random.nextInt();
+        if (i % 2 != 0) {
+            String errMsg = String.format("Random Ex %s - %s ", i, msgList.get(0));
             log.error(errMsg);
             throw new Exception(errMsg);
         }
+        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
         longExecution();
         return classBList;
     }

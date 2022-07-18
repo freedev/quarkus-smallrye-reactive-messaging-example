@@ -22,7 +22,7 @@ public class Consumer {
 
     @Incoming("from-processor-to-consumer")
     public void consume(List<ClassB> list) {
-        log.infof("Consumer received %s", list.size());
+        log.infof("Consumer received %s - %s", list.size(), list.get(0));
     }
 
 }

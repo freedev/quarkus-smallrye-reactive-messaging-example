@@ -22,18 +22,24 @@ public class Producer {
         this.log = Logger.getLogger(getClass());
     }
 
-    @Inject @Channel("from-producer-to-processor")
 //    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 10)
-    @OnOverflow(value = OnOverflow.Strategy.DROP)
+//    @OnOverflow(value = OnOverflow.Strategy.DROP)
+//    @OnOverflow(value = OnOverflow.Strategy.UNBOUNDED_BUFFER)
+//    @OnOverflow(value = OnOverflow.Strategy.FAIL)
+//    @OnOverflow(value = OnOverflow.Strategy.FAIL)
+
+    @Inject @Channel("from-producer-to-processor")
     Emitter<ClassA> emitter;
     public void periodicallySendMessage() {
         Runnable runnable = () -> {
             ClassA message = new ClassA("Hello " + counter.getAndIncrement());
             while (true) {
                 try {
-                    emitter.send(message);
-                    log.info("Emitting: " + message);
-                    break;
+                    if (emitter.hasRequests()) {
+                        emitter.send(message);
+//                        log.info("Emitting: " + message);
+                        break;
+                    }
                 } catch (Exception e) {
                     log.warnf("Handling... %s", e.getMessage());
                     try {
