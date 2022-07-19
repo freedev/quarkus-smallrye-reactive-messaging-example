@@ -26,12 +26,13 @@ public class Producer {
                 .every(Duration.ofMillis(10))
                 .onItem()
                 .transform(t -> new ClassA("Hello " + counter.getAndIncrement()))
-                .emitOn(Infrastructure.getDefaultExecutor())
-                .onOverflow()
-                .invoke(msg -> log.info("Producer dropping " + msg))
-                .drop()
-                .onItem()
-                .invoke(msg -> log.info("Producer emitting " + msg))
+//                .onFailure()
+//                .emitOn(Infrastructure.getDefaultExecutor())
+//                .onOverflow()
+//                .invoke(msg -> log.info("Producer dropping " + msg))
+//                .drop()
+//                .onItem()
+//                .invoke(msg -> log.info("Producer emitting " + msg))
 //                .onFailure(mm -> {
 ////                    log.info("Producer NOT EMITTING " + mm);
 //                    return true;

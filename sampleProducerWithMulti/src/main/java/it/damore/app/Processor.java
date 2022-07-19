@@ -45,21 +45,22 @@ public class Processor {
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
     public Multi<List<ClassB>> consumeMulti2Multi(Multi<ClassA> stream) {
-
         return stream
-                .emitOn(pool)
                 .group()
                 .intoLists()
                 .of(100)
-                .onItem()
-                .transform(Unchecked.function(i -> this.deferred(i)))
-                .onFailure(t -> {
-                    return true;
-                })
-                .retry()
-//                .withBackOff(this.initialBackOff)
-//                .withJitter(.4)
-                .atMost(this.maxRetry);
+                .flatMap(l -> Multi
+                            .createFrom()
+                            .deferred(() -> Multi.createFrom().item(this.convert(l)))
+                            .onFailure(t -> {
+                                log.error(t.getMessage());
+                                return true;
+                            })
+                            .retry()
+                            .withBackOff(this.initialBackOff)
+                            .withJitter(.4)
+                            .atMost(this.maxRetry)
+                );
     }
 
     public List<ClassB> deferred(final List<ClassA> msgList) throws Exception {
@@ -75,7 +76,6 @@ public class Processor {
         int i = random.nextInt();
         if (i % 2 != 0) {
             String errMsg = String.format("Random Ex %s - %s ", i, msgList.get(0));
-            log.error(errMsg);
             throw new RuntimeException(errMsg);
         }
         longExecution();

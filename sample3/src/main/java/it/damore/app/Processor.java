@@ -65,31 +65,34 @@ public class Processor {
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-    public Multi<List<ClassB>> consumeMulti2Multi(Multi<ClassA> stream) {
+    public Multi<List<ClassB>> multi2multi(Multi<ClassA> stream) {
         return stream
-                .emitOn(pool)
 //                .emitOn(pool)
                 .group()
                 .intoLists()
                 .of(100)
-                .onItem()
-                .transform(Unchecked.function(i -> this.convert(i)))
-                .onFailure()
-                .invoke(exception -> log.warn("Failed to read record."))
-                .onFailure(throwable -> {
-                    log.errorf(throwable, "initial Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
-                            this.initialBackOff, this.maxBackOff, this.maxRetry);
-                    return true;
-                })
-                .retry()
-                .withBackOff(this.initialBackOff, this.maxBackOff)
-                .atMost(this.maxRetry)
-                .onFailure(throwable -> {
-                    log.errorf(throwable, "latest Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
-                            this.initialBackOff, this.maxBackOff, this.maxRetry);
-                    return true;
-                })
-                .recoverWithCompletion();
+                .flatMap(l -> {
+                    return Multi.createFrom()
+                            .deferred(() -> Multi.createFrom().item(l))
+                            .onItem()
+                            .transform(Unchecked.function(i -> this.convert(i)))
+                            .onFailure()
+                            .invoke(exception -> log.warn("Failed to read record."))
+                            .onFailure(throwable -> {
+                                log.errorf(throwable, "initial Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
+                                        this.initialBackOff, this.maxBackOff, this.maxRetry);
+                                return true;
+                            })
+                            .retry()
+                            .withBackOff(this.initialBackOff, this.maxBackOff)
+                            .atMost(this.maxRetry)
+                            .onFailure(throwable -> {
+                                log.errorf(throwable, "latest Failure - initialBackOff %s maxBackOff %s maxRetry %s times",
+                                        this.initialBackOff, this.maxBackOff, this.maxRetry);
+                                return true;
+                            })
+                            .recoverWithCompletion();
+                });
     }
 
     public List<ClassB> convert(List<ClassA> msgList) throws Exception {

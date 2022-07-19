@@ -25,7 +25,7 @@ public class Processor {
     @Outgoing("from-processor-to-consumer")
     @Blocking(value = "processor-custom-pool", ordered = false)
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    public Message<ClassB> consumeMulti2Multi(Message<ClassA> classA) {
+    public Message<ClassB> message2message(Message<ClassA> classA) {
         ClassB manipulated = new ClassB(String.format("YYY %s", classA.getPayload().getValue()));
         longExecution();
         int i = new Random().nextInt();

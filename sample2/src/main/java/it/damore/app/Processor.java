@@ -24,7 +24,7 @@ public class Processor {
 //    @Blocking("processor-custom-pool")
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     @Blocking(value = "processor-custom-pool", ordered = false)
-    public void consumeMulti2Multi(ClassA classA) {
+    public void consume(ClassA classA) {
         log.infof("Processor - received %s", classA);
         ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
         longExecution();

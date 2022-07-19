@@ -23,7 +23,7 @@ public class Processor {
 //    @Outgoing("from-processor-to-consumer")
 //    @Blocking(ordered = false)
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    public void consumeMulti2Multi(ClassA classA) {
+    public void consume(ClassA classA) {
         log.infof("Processor - received %s", classA);
         ClassB manipulated = new ClassB(String.format("YYY %s", classA.getValue()));
         longExecution();
