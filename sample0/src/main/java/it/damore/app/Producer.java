@@ -1,7 +1,5 @@
 package it.damore.app;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.Message;
