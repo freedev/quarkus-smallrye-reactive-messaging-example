@@ -20,7 +20,7 @@ public class Consumer {
 
     @Incoming("from-processor-to-consumer")
     public CompletionStage<Void> consume(Message<ClassB> msg) {
-//        log.infof("Consumer received %s", msg);
+        log.infof("Consumer received %s", msg.getPayload());
         return msg.ack();
     }
 

@@ -39,7 +39,7 @@ public class Processor {
 
     public void longExecution() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
