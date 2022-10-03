@@ -1,15 +1,11 @@
 package it.damore.app;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import it.damore.models.ClassB;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 public class Consumer {

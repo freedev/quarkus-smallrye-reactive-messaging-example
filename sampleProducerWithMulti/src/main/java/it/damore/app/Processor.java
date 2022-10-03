@@ -7,7 +7,6 @@ import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import it.damore.utils.CustomThreadPoolProducer;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
@@ -15,11 +14,9 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -30,7 +27,6 @@ public class Processor {
 
     private final static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor.class.getName());
 
-    private AtomicInteger counter = new AtomicInteger();
 //    private Integer maxGroupSize = 100;
 //    private Integer maxDelay = 10;
     private Integer maxRetry = 30;

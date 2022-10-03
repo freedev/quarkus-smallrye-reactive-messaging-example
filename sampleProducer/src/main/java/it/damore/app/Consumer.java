@@ -1,6 +1,5 @@
 package it.damore.app;
 
-import io.smallrye.mutiny.Uni;
 import it.damore.models.ClassB;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;

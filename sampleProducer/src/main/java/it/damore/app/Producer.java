@@ -1,15 +1,11 @@
 package it.damore.app;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,11 +26,12 @@ public class Producer {
         Runnable runnable = () -> {
             ClassA message = new ClassA("Hello " + counter.getAndIncrement());
             log.info("Emitting: " + message);
-            boolean isSent = false;
+
+            boolean sending = true;
             do {
                 try {
                     emitter.send(message);
-                    isSent = true;
+                    sending = false;
                 } catch (Exception e) {
                     log.warnf("Handling... %s", e.getMessage());
                     try {
@@ -43,7 +40,7 @@ public class Producer {
                         throw new RuntimeException(ex);
                     }
                 }
-            } while (isSent);
+            } while (sending);
         };
 
         Executors.newSingleThreadScheduledExecutor()
