@@ -44,6 +44,6 @@ public class Producer {
         };
 
         Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(runnable, 1, 10, TimeUnit.MILLISECONDS);
+                .scheduleAtFixedRate(runnable, 1, 100, TimeUnit.MILLISECONDS);
     }
 }
