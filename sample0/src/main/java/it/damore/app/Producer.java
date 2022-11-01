@@ -22,8 +22,6 @@ public class Producer {
     }
 
     @Outgoing("from-producer-to-processor")
-    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    @Blocking(ordered = false)
     public Message<ClassA> periodicallySendMessage() {
         ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
         log.info("Producer emitting " + classA);

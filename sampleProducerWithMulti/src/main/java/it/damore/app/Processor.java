@@ -68,6 +68,7 @@ public class Processor {
                 .subscribe()
                 .asCompletionStage().get();
     }
+
     public List<ClassB> convert(List<ClassA> msgList) {
         int i = random.nextInt();
         if (i % 2 != 0) {
