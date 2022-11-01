@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.damore.quarkus.reactive-messaging</groupId>
-  <artifactId>sample1</artifactId>
+  <artifactId>exampleProducer</artifactId>
   <version>1.0.0</version>
   <parent>
     <groupId>it.damore.quarkus.reactive-messaging</groupId>
