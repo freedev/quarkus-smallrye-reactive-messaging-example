@@ -20,22 +20,19 @@ public class Producer {
         this.log = Logger.getLogger(getClass());
     }
 
+
     @Outgoing("from-producer-to-processor")
+    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     public Multi<ClassA> periodicallySendMessage() {
 
         return Multi.createFrom()
                 .ticks()
-                .startingAfter(Duration.ofSeconds(2))
                 .every(Duration.ofMillis(50))
-                .onItem().transform(t -> new ClassA("Hello " + t))
-                .onFailure(mm -> {
-                    log.info("Producer NOT EMITTING");
-                    return true;
-                })
-                .retry()
-                .withBackOff(Duration.ofSeconds(1), Duration.ofSeconds(10))
-                .indefinitely()
                 .onItem()
-                .invoke(msg -> log.info("Producer emitting " + msg));
+                .transform(t -> {
+                    ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
+                    log.info("Producer emitting " + classA);
+                    return classA;
+                });
     }
 }

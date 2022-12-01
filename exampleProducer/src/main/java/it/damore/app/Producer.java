@@ -1,11 +1,16 @@
 package it.damore.app;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+import io.smallrye.reactive.messaging.MutinyEmitter;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,27 +25,32 @@ public class Producer {
 
     @Inject @Channel("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 10)
-    Emitter<ClassA> emitter;
+    MutinyEmitter<ClassA> emitter;
     public void periodicallySendMessage() {
         AtomicInteger counter = new AtomicInteger();
         Runnable runnable = () -> {
             ClassA message = new ClassA("Hello " + counter.getAndIncrement());
-            log.info("Emitting: " + message);
 
-            boolean sending = true;
-            do {
-                try {
-                    emitter.send(message);
-                    sending = false;
-                } catch (Exception e) {
-                    log.warnf("Handling... %s", e.getMessage());
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            } while (sending);
+            Uni.createFrom()
+                    .item(message)
+                    .onItem()
+                    .transformToUni(m -> {
+                        int c = m.getAndIncrement();
+                        if (c > 0) {
+                            log.info("re-emitting: " + message);
+                        }
+                        return emitter.send(m);
+                    })
+                    .onFailure(e -> {
+                        log.error("Exception while sending", e);
+                        return true;
+                    })
+                    .retry()
+                    .withBackOff(Duration.ofSeconds(5), Duration.ofSeconds(5))
+                    .atMost(10)
+                    .replaceWithVoid()
+                    .subscribe()
+                    .asCompletionStage();
         };
 
         Executors.newSingleThreadScheduledExecutor()

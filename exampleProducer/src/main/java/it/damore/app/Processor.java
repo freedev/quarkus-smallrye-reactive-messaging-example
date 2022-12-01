@@ -23,14 +23,14 @@ public class Processor {
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-    @Blocking(value = "processor-custom-pool", ordered = false)
+//    @Blocking(value = "processor-custom-pool", ordered = false)
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     public Message<ClassB> message2message(Message<ClassA> classA) {
         ClassB manipulated = new ClassB(String.format("YYY %s", classA.getPayload().getValue()));
         longExecution();
         int i = new Random().nextInt();
         if (i % 7 == 0)
-           classA.nack(new InternalError());
+           classA.nack(new InternalError(classA.getPayload().toString()));
         else
            classA.ack();
         log.infof("Processor received %s", classA.getPayload());
