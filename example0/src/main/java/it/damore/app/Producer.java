@@ -21,7 +21,16 @@ public class Producer {
     @Outgoing("from-producer-to-processor")
     public Message<ClassA> periodicallySendMessage() {
         ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
+        longExecution();
         log.info("Producer emitting " + classA);
         return Message.of(classA);
+    }
+
+    public void longExecution() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

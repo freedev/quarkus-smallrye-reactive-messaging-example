@@ -25,16 +25,16 @@ public class Processor {
     @Outgoing("from-processor-to-consumer")
     @Blocking(value = "processor-custom-pool", ordered = false)
 //    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    public Message<ClassB> message2message(Message<ClassA> classA) {
-        ClassB converted = new ClassB(String.format("YYY %s", classA.getPayload().getValue()));
+    public Message<ClassB> message2message(Message<ClassA> msgClassA) {
+        ClassB converted = new ClassB(String.format("YYY %s", msgClassA.getPayload().getValue()));
         longExecution();
         int i = new Random().nextInt();
         if (i % 7 == 0) {
-            log.infof("Processor nack %s", classA.getPayload());
-            classA.nack(new InternalError());
+            log.errorf("Processor nack %s", msgClassA.getPayload());
+            msgClassA.nack(new InternalError());
         } else {
-            log.infof("Processor converted %s", classA.getPayload());
-            classA.ack();
+            log.infof("Processor converted %s", msgClassA.getPayload());
+            msgClassA.ack();
         }
         return Message.of(converted);
     }
