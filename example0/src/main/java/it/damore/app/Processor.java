@@ -23,8 +23,8 @@ public class Processor {
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-    @Blocking(value = "processor-custom-pool", ordered = false)
-//    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
+//    @Blocking(value = "processor-custom-pool", ordered = false)
+////    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     public Message<ClassB> message2message(Message<ClassA> msgClassA) {
         ClassB converted = new ClassB(String.format("YYY %s", msgClassA.getPayload().getValue()));
         longExecution();

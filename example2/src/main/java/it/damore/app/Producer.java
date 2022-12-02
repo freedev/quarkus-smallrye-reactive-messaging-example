@@ -1,6 +1,9 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.subscription.BackPressureFailure;
+import io.smallrye.mutiny.subscription.BackPressureStrategy;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import it.damore.models.ClassA;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -26,13 +29,26 @@ public class Producer {
     public Multi<ClassA> periodicallySendMessage() {
 
         return Multi.createFrom()
-                .ticks()
-                .every(Duration.ofMillis(50))
+                .emitter(emitter -> {
+                    Integer value = Integer.valueOf(counter.getAndIncrement());
+                    while (true) {
+                        try {
+                            emitter.emit(value);
+                            value = Integer.valueOf(counter.getAndIncrement());
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        } catch (BackPressureFailure e) {
+                            log.info("retry....");
+                        }
+                    }
+                }, BackPressureStrategy.ERROR)
                 .onItem()
                 .transform(t -> {
-                    ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
+                    ClassA classA = new ClassA("Hello " + t);
                     log.info("Producer emitting " + classA);
                     return classA;
-                });
+                })
+                ;
     }
 }

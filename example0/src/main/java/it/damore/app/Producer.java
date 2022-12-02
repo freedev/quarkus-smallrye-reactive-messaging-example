@@ -19,7 +19,7 @@ public class Producer {
     }
 
     @Outgoing("from-producer-to-processor")
-    public Message<ClassA> periodicallySendMessage() {
+    public Message<ClassA> fromProducerToProcessor() {
         ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
         longExecution();
         log.info("Producer emitting " + classA);
