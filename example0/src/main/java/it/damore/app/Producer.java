@@ -1,6 +1,7 @@
 package it.damore.app;
 
 import it.damore.models.ClassA;
+import it.damore.utils.Utils;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
@@ -19,18 +20,11 @@ public class Producer {
     }
 
     @Outgoing("from-producer-to-processor")
-    public Message<ClassA> fromProducerToProcessor() {
+    public ClassA produce() {
         ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
-        longExecution();
+        Utils.longExecution();
         log.info("Producer emitting " + classA);
-        return Message.of(classA);
+        return classA;
     }
 
-    public void longExecution() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

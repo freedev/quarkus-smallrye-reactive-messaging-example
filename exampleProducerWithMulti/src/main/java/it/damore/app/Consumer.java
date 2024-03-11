@@ -6,10 +6,12 @@ import org.jboss.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Consumer {
 
+    private AtomicInteger counter = new AtomicInteger();
     protected final Logger log;
 
     protected Consumer() {
@@ -17,8 +19,13 @@ public class Consumer {
     }
 
     @Incoming("from-processor-to-consumer")
-    public void consume(List<ClassB> list) {
-        log.infof("Consumer received %s - %s", list.size(), list.get(0));
+    public void consume(ClassB classB) {
+        var currentValue = counter.incrementAndGet();
+        if (currentValue % 100 == 0) {
+            log.infof("Consumer received %s messages", currentValue);
+        }
+//        log.infof("Consumer received %s - %s", list.size(), list.get(0));
+//        log.infof("Consumer received %s", classB);
     }
 
 }

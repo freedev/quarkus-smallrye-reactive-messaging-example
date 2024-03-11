@@ -3,6 +3,7 @@ package it.damore.app;
 import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
+import it.damore.utils.Utils;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
@@ -23,27 +24,10 @@ public class Processor {
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-//    @Blocking(value = "processor-custom-pool", ordered = false)
-////    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
-    public Message<ClassB> message2message(Message<ClassA> msgClassA) {
-        ClassB converted = new ClassB(String.format("YYY %s", msgClassA.getPayload().getValue()));
-        longExecution();
-        int i = new Random().nextInt();
-        if (i % 7 == 0) {
-            log.errorf("Processor nack %s", msgClassA.getPayload());
-            msgClassA.nack(new InternalError());
-        } else {
-            log.infof("Processor converted %s", msgClassA.getPayload());
-            msgClassA.ack();
-        }
-        return Message.of(converted);
+    public ClassB process(ClassA classA) {
+        ClassB classB = new ClassB(String.format("YYY %s", classA));
+//        Utils.longExecution();
+        return classB;
     }
 
-    public void longExecution() {
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
