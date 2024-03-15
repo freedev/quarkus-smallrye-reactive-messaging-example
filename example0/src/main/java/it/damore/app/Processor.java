@@ -25,7 +25,7 @@ public class Processor {
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
     public ClassB process(ClassA classA) {
-        ClassB classB = new ClassB(String.format("YYY %s", classA));
+        ClassB classB = new ClassB(String.format("%s-ish", classA.value));
 //        Utils.longExecution();
         return classB;
     }

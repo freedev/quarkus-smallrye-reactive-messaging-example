@@ -1,7 +1,7 @@
 package it.damore.models;
 
 public class ClassA {
-    private final String value;
+    public String value;
 
     public ClassA(String v) {
         this.value = v;

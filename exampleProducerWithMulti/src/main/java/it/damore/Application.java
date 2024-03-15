@@ -14,6 +14,7 @@ public class Application implements QuarkusApplication {
     Producer producer;
     @Override
     public int run(String... args) throws Exception {
+//        producer.periodicallySendMessage();
         Quarkus.waitForExit();
         return 0;
     }
