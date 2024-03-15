@@ -23,6 +23,8 @@ public class Producer {
 
     @Outgoing("from-producer-to-processor")
     public Message<ClassA> producer() {
-        return Message.of(new ClassA("Hello " + counter.getAndIncrement()));
+        ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
+        log.info("Producer emitting " + classA);
+        return Message.of(classA);
     }
 }

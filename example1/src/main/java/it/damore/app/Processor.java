@@ -27,14 +27,7 @@ public class Processor {
         ClassA classA = msgClassA.getPayload();
         ClassB converted = new ClassB(String.format("YYY %s", classA.value));
         longExecution();
-//        int i = new Random().nextInt();
-//        if (i % 7 == 0) {
-//            log.errorf("Processor nack %s", msgClassA.getPayload());
-//            msgClassA.nack(new InternalError());
-//        } else {
-//            log.infof("Processor converted %s", msgClassA.getPayload());
-//            msgClassA.ack();
-//        }
+
         return Message.of(converted);
     }
 
