@@ -35,11 +35,10 @@ public class Producer {
                     .item(message)
                     .onItem()
                     .transformToUni(m -> {
-                        int c = m.getAndIncrement();
-                        if (c > 0) {
-                            log.info("re-emitting: " + message);
-                        }
-                        return emitter.send(m);
+                        return Uni.createFrom()
+                                .deferred(() -> {
+                                    return emitter.send(message);
+                                });
                     })
                     .onFailure(e -> {
                         log.error("Exception while sending", e);

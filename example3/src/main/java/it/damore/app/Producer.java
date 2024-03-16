@@ -1,15 +1,17 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
 import it.damore.models.ClassA;
-import org.eclipse.microprofile.reactive.messaging.OnOverflow;
+import it.damore.utils.Utils;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
+import static mutiny.zero.ZeroPublisher.fromStream;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.time.Duration;
+import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+
 @ApplicationScoped
 public class Producer {
     private AtomicInteger counter = new AtomicInteger();
@@ -19,26 +21,14 @@ public class Producer {
     }
     @Outgoing("from-producer-to-processor")
     public Multi<ClassA> producer() {
-
         return Multi.createFrom()
-                .ticks()
-                .every(Duration.ofMillis(10))
-                .onItem()
-                .transform(t -> new ClassA("Hello " + counter.getAndIncrement()))
-//                .onFailure()
-//                .emitOn(Infrastructure.getDefaultExecutor())
-//                .onOverflow()
-//                .invoke(msg -> log.info("Producer dropping " + msg))
-//                .drop()
-//                .onItem()
-//                .invoke(msg -> log.info("Producer emitting " + msg))
-//                .onFailure(mm -> {
-////                    log.info("Producer NOT EMITTING " + mm);
-//                    return true;
-//                })
-//                .retry()
-//                .withBackOff(Duration.ofSeconds(1), Duration.ofSeconds(10))
-//                .expireIn(10000)
-                ;
+                .publisher(fromStream(this::getStream));
+    }
+    private Stream<ClassA> getStream()
+    {
+        return Stream.iterate(0, (Integer n) -> n + 1)
+                .map(i -> {
+                    return new ClassA("Hello " + i);
+                });
     }
 }

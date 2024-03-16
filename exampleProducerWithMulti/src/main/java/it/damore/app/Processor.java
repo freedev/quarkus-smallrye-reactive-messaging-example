@@ -7,7 +7,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
-import it.damore.utils.CustomThreadPoolProducer;
+import it.damore.utils.Utils;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
@@ -34,7 +34,7 @@ public class Processor {
     private Random random = new Random();
     protected final Logger log;
 
-    private final static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor.class.getName());
+    private final static ExecutorService pool = Utils.getPoolWithName(Processor.class.getName());
 
 //    private Integer maxGroupSize = 100;
 //    private Integer maxDelay = 10;
