@@ -1,6 +1,7 @@
 package it.damore.app;
 
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
@@ -29,14 +30,21 @@ public class Processor {
 //                .emitOn(pool)
                 .group()
                 .intoLists()
-                .of(100)
-                .flatMap(l -> Multi.createFrom()
-                            .deferred(() -> Multi.createFrom().item(l))
+                .of(10)
+                .onItem()
+                .transformToUni(l -> Uni.createFrom()
+                            .deferred(() -> {
+//                                log.infof("received %s", l.size());
+                                return Uni.createFrom().item(l);
+                            })
                             .onItem()
-                            .transform(Unchecked.function(this::convert)))
-                .onFailure()
-                .retry()
-                .indefinitely();
+                            .transform(Unchecked.function(this::convert))
+                            .onFailure()
+                            .retry()
+                            .indefinitely()
+                )
+                .merge()
+;
     }
 
     public List<ClassB> convert(List<ClassA> msgList) throws Exception {
@@ -48,7 +56,10 @@ public class Processor {
             throw new Exception(errMsg);
         }
         Utils.longExecution();
-        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.value))).collect(Collectors.toList());
+        List<ClassB> classBList = msgList
+                .stream()
+                .map(msg -> new ClassB(String.format("YYY %s", msg.value)))
+                .collect(Collectors.toList());
         return classBList;
     }
 }

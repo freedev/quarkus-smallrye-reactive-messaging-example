@@ -19,6 +19,9 @@ public class Consumer {
     @Incoming("from-processor-to-consumer")
     public void consume(List<ClassB> msgList) {
         log.infof("Consumer received %s", msgList.size());
+        msgList.forEach(classB -> {
+            log.infof("Consumer received %s", classB);
+        });
     }
 
 }
