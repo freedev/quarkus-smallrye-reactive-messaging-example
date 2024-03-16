@@ -26,7 +26,7 @@ public class Processor {
 //    @Blocking(value = "processor-custom-pool", ordered = false)
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
     public Message<ClassB> message2message(Message<ClassA> classA) {
-        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getPayload().getValue()));
+        ClassB manipulated = new ClassB(String.format("YYY %s", classA.getPayload().value));
         longExecution();
         int i = new Random().nextInt();
         if (i % 7 == 0)

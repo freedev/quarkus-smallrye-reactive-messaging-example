@@ -22,11 +22,8 @@ import java.util.stream.Stream;
 
 @ApplicationScoped
 public class Processor {
-
     protected final Logger log;
-
     private final static ExecutorService pool = CustomThreadPoolProducer.getPoolWithName(Processor.class.getName());
-
     private AtomicInteger counter = new AtomicInteger();
     private Integer maxGroupSize;
     private Integer maxDelay;
@@ -104,7 +101,7 @@ public class Processor {
             throw new Exception(errMsg);
         }
         longExecution();
-        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.getValue()))).collect(Collectors.toList());
+        List<ClassB> classBList = msgList.stream().map(msg -> new ClassB(String.format("YYY %s", msg.value))).collect(Collectors.toList());
         return classBList;
     }
 

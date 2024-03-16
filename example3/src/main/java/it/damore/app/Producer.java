@@ -18,8 +18,7 @@ public class Producer {
         this.log = Logger.getLogger(getClass());
     }
     @Outgoing("from-producer-to-processor")
-    @OnOverflow(value = OnOverflow.Strategy.FAIL)
-    public Multi<ClassA> periodicallySendMessage() {
+    public Multi<ClassA> producer() {
 
         return Multi.createFrom()
                 .ticks()

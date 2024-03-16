@@ -30,8 +30,7 @@ public class Processor {
                 .onItem()
                 .transform(classA -> {
                     longExecution();
-                    ClassB converted = new ClassB(String.format("YYY %s", classA.getPayload().value));
-                    return converted;
+                    return new ClassB(String.format("YYY %s", classA.getPayload().value));
                 });
     }
 
