@@ -32,7 +32,7 @@ public class Processor {
     }
 
     private Random random = new Random();
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
     private final static ExecutorService pool = Utils.getPoolWithName(Processor.class.getName());
 
@@ -41,9 +41,7 @@ public class Processor {
     private Integer maxRetry = 30;
     private Duration initialBackOff = Duration.ofSeconds(2);
     private Integer sleep = 5000;
-    protected Processor() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Processor() {}
 
     //    @Blocking(value = "processor-custom-pool", ordered = false)
 //    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1)
@@ -97,17 +95,10 @@ public class Processor {
                         log.infof(errMsg);
                         throw new ProcessorException(errMsg);
                     }
-                    longExecution();
+                    Utils.longExecution();
                     return Uni.createFrom().item(converted);
                 }))
                 .onFailure().recoverWithNull();
     }
 
-    public void longExecution() {
-        try {
-            Thread.sleep(this.sleep);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

@@ -16,18 +16,15 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class Processor {
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
     protected Processor(
-                    ) {
-        this.log = Logger.getLogger(getClass());
-    }
+                    ) {}
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-    public Multi<List<ClassB>> multi2multi(Multi<ClassA> stream) {
+    public Multi<ClassB> process(Multi<ClassA> stream) {
         return stream
                 .emitOn(Utils.getPoolWithName("converter-pool"))
-//                .emitOn(pool)
                 .group()
                 .intoLists()
                 .of(10)
@@ -44,13 +41,14 @@ public class Processor {
                             .indefinitely()
                 )
                 .merge()
+                .flatMap(l -> Multi.createFrom().items(l.stream()))
 ;
     }
 
     public List<ClassB> convert(List<ClassA> msgList) throws Exception {
         Random r = new Random();
         int i = r.nextInt();
-        if (i % 7 != 0) {
+        if (i % 2 == 0) {
             String errMsg = "Random exception raised";
             log.error(errMsg);
             throw new Exception(errMsg);

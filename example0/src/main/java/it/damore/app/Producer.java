@@ -12,11 +12,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Producer {
 
     private final AtomicInteger counter = new AtomicInteger();
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Producer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Producer() {}
 
     @Outgoing("from-producer-to-processor")
     public ClassA produce() {

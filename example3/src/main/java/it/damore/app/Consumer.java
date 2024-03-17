@@ -10,18 +10,17 @@ import java.util.List;
 @ApplicationScoped
 public class Consumer {
 
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Consumer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Consumer() {}
 
     @Incoming("from-processor-to-consumer")
-    public void consume(List<ClassB> msgList) {
-        log.infof("Consumer received %s", msgList.size());
-        msgList.forEach(classB -> {
-            log.infof("Consumer received %s", classB);
-        });
+    public void consume(ClassB classB) {
+        log.infof("Consumer received %s", classB);
+//        log.infof("Consumer received %s", msgList.size());
+//        msgList.forEach(classB -> {
+//            log.infof("Consumer received %s", classB);
+//        });
     }
 
 }

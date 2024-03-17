@@ -16,11 +16,9 @@ import java.util.Random;
 @ApplicationScoped
 public class Processor {
 
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Processor() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Processor() {}
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")

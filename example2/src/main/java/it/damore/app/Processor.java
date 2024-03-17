@@ -16,11 +16,9 @@ import java.util.Random;
 @ApplicationScoped
 public class Processor {
 
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Processor() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Processor() {}
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
@@ -29,16 +27,9 @@ public class Processor {
                 .item(msg)
                 .onItem()
                 .transform(classA -> {
-                    longExecution();
+                    Utils.longExecution();
                     return new ClassB(String.format("YYY %s", classA.getPayload().value));
                 });
     }
 
-    public void longExecution() {
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

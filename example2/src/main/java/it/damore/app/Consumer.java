@@ -11,11 +11,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class Consumer {
 
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Consumer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Consumer() {}
 
     @Incoming("from-processor-to-consumer")
     public Uni<Void> consume(Message<ClassB> msg) {

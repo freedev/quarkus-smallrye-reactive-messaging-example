@@ -1,6 +1,7 @@
 package it.damore.app;
 
 import it.damore.models.ClassA;
+import it.damore.utils.Utils;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
@@ -12,25 +13,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Producer {
 
     private AtomicInteger counter = new AtomicInteger();
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected Producer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Producer() {}
 
     @Outgoing("from-producer-to-processor")
     public Message<ClassA> produce() {
         ClassA classA = new ClassA("Hello " + counter.getAndIncrement());
-        longExecution();
+        Utils.longExecution();
 //        log.info("Producer emitting " + classA);
         return Message.of(classA);
     }
 
-    public void longExecution() {
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

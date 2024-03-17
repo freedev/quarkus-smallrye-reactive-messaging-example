@@ -19,13 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Producer {
-    protected final Logger log;
+    protected final Logger log = Logger.getLogger(getClass());
 
     private AtomicInteger counter = new AtomicInteger();
 
-    protected Producer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected Producer() {}
 
 
     @Outgoing("from-producer-to-processor")

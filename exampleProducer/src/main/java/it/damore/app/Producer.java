@@ -18,10 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ApplicationScoped
 public class Producer {
     private AtomicInteger counter = new AtomicInteger();
-    protected final Logger log;
-    protected Producer() {
-        this.log = Logger.getLogger(getClass());
-    }
+    protected final Logger log = Logger.getLogger(getClass());
+    protected Producer() {}
 
     @Inject @Channel("from-producer-to-processor")
     @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 10)
