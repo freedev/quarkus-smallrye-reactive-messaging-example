@@ -84,7 +84,7 @@ public class Processor {
     public Uni<List<ClassB>> convert(List<ClassA> msgList) {
         List<ClassB> collect = msgList
                 .stream()
-                .map(msg -> new ClassB(String.format("YYY %s", msg.value)))
+                .map(msg -> new ClassB(String.format("%s-ish", msg.value)))
                 .collect(Collectors.toList());
         return Uni.createFrom()
                 .deferred(() -> collect,

@@ -24,7 +24,7 @@ public class Processor {
     @Outgoing("from-processor-to-consumer")
     public Message<ClassB> processor(Message<ClassA> msgClassA) {
         ClassA classA = msgClassA.getPayload();
-        ClassB converted = new ClassB(String.format("YYY %s", classA.value));
+        ClassB converted = new ClassB(String.format("%s-ish", classA.value));
         Utils.longExecution();
 
         return Message.of(converted);

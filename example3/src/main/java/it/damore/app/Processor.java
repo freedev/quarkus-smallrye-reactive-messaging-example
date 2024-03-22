@@ -56,7 +56,7 @@ public class Processor {
         Utils.longExecution();
         List<ClassB> classBList = msgList
                 .stream()
-                .map(msg -> new ClassB(String.format("YYY %s", msg.value)))
+                .map(msg -> new ClassB(String.format("%s-ish", msg.value)))
                 .collect(Collectors.toList());
         return classBList;
     }
