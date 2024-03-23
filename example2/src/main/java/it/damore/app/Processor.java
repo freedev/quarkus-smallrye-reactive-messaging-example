@@ -16,13 +16,9 @@ import java.util.Random;
 @ApplicationScoped
 public class Processor {
 
-    protected final Logger log = Logger.getLogger(getClass());
-
-    protected Processor() {}
-
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
-    @Blocking("processor-custom-pool")
+//    @Blocking("processor-custom-pool")
     public Uni<ClassB> processor(Message<ClassA> msg) {
         return Uni.createFrom()
                 .item(msg)
@@ -32,4 +28,7 @@ public class Processor {
                     return new ClassB(String.format("%s-ish", classA.getPayload().value));
                 });
     }
+
+    protected final Logger log = Logger.getLogger(getClass());
+
 }

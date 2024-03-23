@@ -11,6 +11,8 @@ import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
+
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,12 +24,13 @@ public class Processor {
 
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
+//    @Blocking(ordered=false)
     public Multi<ClassB> process(Multi<ClassA> stream) {
         return stream
                 .emitOn(Utils.getPoolWithName("converter-pool"))
                 .group()
                 .intoLists()
-                .of(10)
+                .of(10, Duration.ofSeconds(5))
                 .onItem()
                 .transformToUni(l -> Uni.createFrom()
                             .deferred(() -> {

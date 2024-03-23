@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Producer {
-    private AtomicInteger counter = new AtomicInteger();
     protected final Logger log = Logger.getLogger(getClass());
     protected Producer() {}
 
