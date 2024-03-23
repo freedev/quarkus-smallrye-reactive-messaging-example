@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
 
-    static AtomicInteger counter = new AtomicInteger();
+    static public AtomicInteger counter = new AtomicInteger();
     public static ExecutorService getPoolWithName(String poolName) {
         return getPoolWithName(poolName, 4);
     }

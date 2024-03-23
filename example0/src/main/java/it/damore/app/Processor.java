@@ -16,16 +16,16 @@ import java.util.Random;
 @ApplicationScoped
 public class Processor {
 
-    protected final Logger log = Logger.getLogger(getClass());
-
-    protected Processor() {}
-
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
+//    @Blocking()
+    @Blocking(value = "processor-custom-pool", ordered = false)
     public ClassB process(ClassA classA) {
         ClassB classB = new ClassB(String.format("%s-ish", classA.value));
-//        Utils.longExecution();
+        Utils.longExecution();
+        log.info("Processor converting " + classB);
         return classB;
     }
 
+    protected final Logger log = Logger.getLogger(getClass());
 }
