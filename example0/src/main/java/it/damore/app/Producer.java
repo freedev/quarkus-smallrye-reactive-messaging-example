@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ApplicationScoped
 public class Producer {
 
-    @Outgoing("from-producer-to-processor")
+//    @Outgoing("from-producer-to-processor")
 //    @Blocking()
     public ClassA produce() {
         ClassA classA = new ClassA("Hello " + Utils.counter.getAndIncrement());

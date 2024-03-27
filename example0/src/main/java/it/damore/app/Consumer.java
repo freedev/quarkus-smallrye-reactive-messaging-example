@@ -10,7 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class Consumer {
 
-    @Incoming("from-processor-to-consumer")
+//    @Incoming("from-processor-to-consumer")
 //    @Blocking()
     public void consume(ClassB classB) {
         log.infof("Consumer received %s", classB);

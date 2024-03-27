@@ -19,7 +19,7 @@ public class Processor {
     @Incoming("from-producer-to-processor")
     @Outgoing("from-processor-to-consumer")
 //    @Blocking()
-    @Blocking(value = "processor-custom-pool", ordered = false)
+//    @Blocking(value = "processor-custom-pool", ordered = false)
     public ClassB process(ClassA classA) {
         ClassB classB = new ClassB(String.format("%s-ish", classA.value));
         Utils.longExecution();
