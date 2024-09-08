@@ -16,6 +16,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Duration;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class Producer {

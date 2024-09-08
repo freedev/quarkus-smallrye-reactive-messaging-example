@@ -23,12 +23,12 @@ public class MyTest {
     // 1. Switch the channels to the in-memory connector:
     @BeforeAll
     public static void switchMyChannels() {
-        InMemoryConnector.switchOutgoingChannelsToInMemory("from-producer-to-processor");
+//        InMemoryConnector.switchOutgoingChannelsToInMemory("from-producer-to-processor");
 
         InMemoryConnector.switchIncomingChannelsToInMemory("from-producer-to-processor");
         InMemoryConnector.switchOutgoingChannelsToInMemory("from-processor-to-consumer");
 
-        InMemoryConnector.switchIncomingChannelsToInMemory("from-processor-to-consumer");
+//        InMemoryConnector.switchIncomingChannelsToInMemory("from-processor-to-consumer");
     }
 
     // 2. Don't forget to reset the channel after the tests:

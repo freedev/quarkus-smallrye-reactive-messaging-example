@@ -3,6 +3,7 @@ package it.damore.app;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import it.damore.models.ClassA;
 import it.damore.models.ClassB;
 import it.damore.utils.Utils;
@@ -27,14 +28,15 @@ public class Processor {
 //    @Blocking(ordered=false)
     public Multi<ClassB> process(Multi<ClassA> stream) {
         return stream
-                .emitOn(Utils.getPoolWithName("converter-pool"))
+                .emitOn(Utils.getPoolWithName("converter-pool", 7))
                 .group()
                 .intoLists()
                 .of(10, Duration.ofSeconds(5))
                 .onItem()
                 .transformToUni(l -> Uni.createFrom()
+//                                .item(l)
                             .deferred(() -> {
-//                                log.infof("received %s", l.size());
+                                log.infof("received %s", l.size());
                                 return Uni.createFrom().item(l);
                             })
                             .onItem()
